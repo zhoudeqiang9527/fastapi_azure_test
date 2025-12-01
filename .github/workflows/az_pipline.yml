@@ -15,6 +15,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'       # FastAPI应用的根目录
   AZURE_RESOURCE_GROUP: resource_chenlin  # 替换为你的Azure资源组名称
   LOCATION: eastus  # 替换为你的Azure区域，例如eastus
+  # 需要在azure application app 中创建OCID 联合证书
 
 jobs:
   build-and-deploy:
