@@ -68,8 +68,8 @@ jobs:
             --name ${{ env.AZURE_APP_PLAN_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --location ${{ env.LOCATION }} \
-            --sku F1 \  # 免费层，测试用；生产可改为B1/B2
-            --is-linux \  # 关键：Linux计划才支持Python运行时
+            --sku F1 \
+            --is-linux \
             --number-of-workers 1 || true
           
           # 3. 创建Web App（依赖上面的计划）
@@ -77,16 +77,15 @@ jobs:
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --plan ${{ env.AZURE_APP_PLAN_NAME }} \
-            --runtime "PYTHON|3.13" \
-            --deployment-local-git || true
+            --runtime "PYTHON|3.13" || true
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          slot-name: 'Production'  # 如果需要部署到特定槽位，可以更改
+          slot-name: 'Production'
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}  # 明确资源组，避免冲突
+          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Configure FastAPI startup command
         run: |
