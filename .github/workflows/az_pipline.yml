@@ -63,7 +63,23 @@ jobs:
           # 1. 创建资源组（已存在则跳过）
           az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.LOCATION }} || true
           
-          # 2. 创建Linux应用服务计划（必须先于Web App创建）
+          # 2. 注册 Microsoft.Web 命名空间（关键修复）
+          az provider register --namespace Microsoft.Web || true
+          # 等待注册完成（最多等待5分钟，轮询检查状态）
+          timeout=300  # 5分钟超时
+          elapsed=0
+          while [ "$(az provider show --namespace Microsoft.Web --query "registrationState" --output tsv)" != "Registered" ] && [ $elapsed -lt $timeout ]; do
+            echo "Microsoft.Web 命名空间正在注册中，已等待 $elapsed 秒..."
+            sleep 30
+            elapsed=$((elapsed + 30))
+          done
+          # 检查最终注册状态
+          if [ "$(az provider show --namespace Microsoft.Web --query "registrationState" --output tsv)" != "Registered" ]; then
+            echo "❌ Microsoft.Web 命名空间注册超时，请手动注册后重试！"
+            exit 1
+          fi
+          
+          # 3. 创建Linux应用服务计划
           az appservice plan create \
             --name ${{ env.AZURE_APP_PLAN_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
