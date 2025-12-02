@@ -84,7 +84,7 @@ jobs:
             --name ${{ env.AZURE_APP_PLAN_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --location ${{ env.LOCATION }} \
-            --sku F1 \
+            --sku B1 \
             --is-linux \
             --number-of-workers 1 || true
           
