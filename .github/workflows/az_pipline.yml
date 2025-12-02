@@ -76,7 +76,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+          resource-group-name: ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Configure FastAPI startup command
         run: |
