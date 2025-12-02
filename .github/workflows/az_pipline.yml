@@ -89,10 +89,11 @@ jobs:
       - name: Configure FastAPI startup command
         run: |
           # 配置Web App启动命令（适配Azure Linux Python环境）
+          # 使用UvicornWorker来运行FastAPI应用
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --startup-file "gunicorn --bind=0.0.0.0 --workers=4 main:app"
+            --startup-file "gunicorn --workers=4 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0 main:app"
           # 添加应用设置，启用SCM和指定Python版本
           az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
