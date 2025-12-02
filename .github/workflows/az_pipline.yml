@@ -11,13 +11,13 @@ permissions:
   contents: read
 
 env:
-  AZURE_WEBAPP_NAME: zdq-fastapi-app  # 替换为你的Azure Web App名称
+  AZURE_WEBAPP_NAME: zdq-fastapi-webapp  # 替换为你的Azure Web App名称
   AZURE_WEBAPP_PACKAGE_PATH: '.'       # FastAPI应用的根目录
   AZURE_RESOURCE_GROUP: resource_chenlin  # 替换为你的Azure资源组名称
   LOCATION: eastus  # 替换为你的Azure区域，例如eastus
   # 需要在azure application app 中创建OCID 联合证书
   # 应用服务计划名称（与命令中一致）
-  AZURE_APP_PLAN_NAME: zdq-fastapi-app_plan
+  AZURE_APP_PLAN_NAME: zdq-fastapi-appplan
 
 jobs:
   build-and-deploy:
@@ -58,42 +58,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create Azure Resources (Group + Plan + Web App)
-        run: |
-          # 1. 创建资源组（已存在则跳过）
-          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.LOCATION }} || true
-          
-          # 2. 注册 Microsoft.Web 命名空间（关键修复）
-          az provider register --namespace Microsoft.Web || true
-          # 等待注册完成（最多等待5分钟，轮询检查状态）
-          timeout=300  # 5分钟超时
-          elapsed=0
-          while [ "$(az provider show --namespace Microsoft.Web --query "registrationState" --output tsv)" != "Registered" ] && [ $elapsed -lt $timeout ]; do
-            echo "Microsoft.Web 命名空间正在注册中，已等待 $elapsed 秒..."
-            sleep 30
-            elapsed=$((elapsed + 30))
-          done
-          # 检查最终注册状态
-          if [ "$(az provider show --namespace Microsoft.Web --query "registrationState" --output tsv)" != "Registered" ]; then
-            echo "❌ Microsoft.Web 命名空间注册超时，请手动注册后重试！"
-            exit 1
-          fi
-          
-          # 3. 创建Linux应用服务计划
-          az appservice plan create \
-            --name ${{ env.AZURE_APP_PLAN_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --location ${{ env.LOCATION }} \
-            --sku B1 \
-            --is-linux \
-            --number-of-workers 1 || true
-          
-          # 3. 创建Web App（依赖上面的计划）
-          az webapp create \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --plan ${{ env.AZURE_APP_PLAN_NAME }} \
-            --runtime "PYTHON|3.13" || true
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
