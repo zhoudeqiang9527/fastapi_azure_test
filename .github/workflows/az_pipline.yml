@@ -3,7 +3,7 @@ name: Build and deploy FastAPI app to Azure Web App
 on:
   push:
     branches:
-      - main  # 根据你的分支名称调整
+      - main333  # 根据你的分支名称调整
   workflow_dispatch:
 
 permissions:
