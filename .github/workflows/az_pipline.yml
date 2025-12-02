@@ -59,6 +59,18 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
+      - name: Ensure Web App is Running
+        run: |
+          # 确保Web App处于运行状态
+          az webapp start \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+          # 显示Web App状态
+          az webapp show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "state"
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
@@ -69,16 +81,26 @@ jobs:
       - name: Configure FastAPI startup command
         run: |
           # 配置Web App启动命令（适配Azure Linux Python环境）
+          # 配置Web App启动命令（适配Azure Linux Python环境）
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --startup-file "gunicorn --bind=0.0.0.0 --workers=4 main:app"
+          # 重启Web App以应用配置
+          az webapp restart \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
           # 注：Azure Linux Web App推荐用gunicorn而非uvicorn（更稳定）
           # 添加应用设置
           az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --settings WEBSITE_WEBDEPLOY_USE_SCM=true
+          # 设置Python版本
+          az webapp config set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --linux-fx-version "PYTHON|3.13"
 
       - name: Logout from Azure
         if: always()  # 无论前面步骤是否失败，都执行登出
