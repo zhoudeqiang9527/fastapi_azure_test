@@ -34,15 +34,16 @@ jobs:
         with:
           python-version: '3.13'  # 更新为项目要求的Python版本
 
-      - name: Install dependencies to deployment directory
+      # 新增步骤：安装依赖用于测试
+      - name: Install dependencies
         run: |
-          # 创建虚拟环境（与 Azure 默认虚拟环境名称一致，避免兼容问题）
-          python -m venv antenv
-          # 激活虚拟环境
-          source antenv/bin/activate
-          # 安装依赖到虚拟环境（包含 fastapi 等）
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
+          
+      # 新增步骤：测试应用是否能正常导入
+      - name: Test application import
+        run: |
+          python -c "import main"
         
       # 新增步骤：创建.env文件（从Action Variables读取配置）
       - name: Create .env file from Action Variables
@@ -88,26 +89,28 @@ jobs:
       - name: Configure FastAPI startup command
         run: |
           # 配置Web App启动命令（适配Azure Linux Python环境）
-          # 配置Web App启动命令（适配Azure Linux Python环境）
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --startup-file "gunicorn --bind=0.0.0.0 --workers=4 main:app"
-          # 重启Web App以应用配置
-          az webapp restart \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
-          # 注：Azure Linux Web App推荐用gunicorn而非uvicorn（更稳定）
-          # 添加应用设置
+          # 添加应用设置，启用SCM和指定Python版本
           az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --settings WEBSITE_WEBDEPLOY_USE_SCM=true
+            --settings \
+              WEBSITE_WEBDEPLOY_USE_SCM=true \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
+              PYTHONPATH="/home/site/wwwroot" \
+              PYTHON_VERSION="3.13"
           # 设置Python版本
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --linux-fx-version "PYTHON|3.13"
+          # 重启Web App以应用配置
+          az webapp restart \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Logout from Azure
         if: always()  # 无论前面步骤是否失败，都执行登出
