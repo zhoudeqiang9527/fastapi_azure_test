@@ -4,10 +4,11 @@ from pydantic import BaseModel
 from typing import List, Optional
 import csv
 import os
+import json
 from dotenv import load_dotenv
 from utils import CommonUtils
 
-# 加载 .env 文件
+# .envファイルを読み込む
 load_dotenv()
 
 app = FastAPIOffline(
@@ -37,7 +38,7 @@ async def root():
 
 @app.get("/convert/half-width")
 async def convert_to_half_width(text: str):
-    """将文本转换为半角字符"""
+    """テキストを半角文字に変換する"""
     try:
         result = CommonUtils.to_half_angle(text)
         return TextProcessResponse(result=result)
@@ -46,7 +47,7 @@ async def convert_to_half_width(text: str):
 
 @app.get("/convert/full-width")
 async def convert_to_full_width(text: str):
-    """将文本转换为全角字符"""
+    """テキストを全角文字に変換する"""
     try:
         result = CommonUtils.to_full_angle(text)
         return TextProcessResponse(result=result)
@@ -55,7 +56,7 @@ async def convert_to_full_width(text: str):
 
 @app.get("/extract/numbers")
 async def extract_numbers(text: str):
-    """从文本中提取所有数字"""
+    """テキストからすべての数字を抽出する"""
     try:
         numbers = CommonUtils.extract_numbers(text)
         first_int = CommonUtils.extract_first_number_as_int(text)
@@ -73,28 +74,58 @@ async def extract_numbers(text: str):
 
 @app.post("/save/csv")
 async def save_to_csv(request: SaveToCsvRequest):
-    """将内容转换为全角并保存为CSV文件"""
+    """コンテンツを全角に変換し、CSVファイルとして保存する"""
     try:
         full_width_content = CommonUtils.to_full_angle(request.content)
         
-        # 从环境变量获取输出路径，默认为 'output'
+        # 環境変数から出力パスを取得、デフォルトは 'output'
         output_path = os.getenv('CSV_OUTPUT_PATH', 'output')
         
-        # 确保有目录来存储文件
+        # ファイルを保存するディレクトリを確認
         os.makedirs(output_path, exist_ok=True)
         
-        # 定义文件路径
+        # ファイルパスを定義
         file_path = os.path.join(output_path, request.filename)
         
-        # 写入CSV文件
+        # CSVファイルに書き込む
         with open(file_path, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
-            # 将全角内容按行分割写入
+            # 全角コンテンツを行ごとに分割して書き込む
             lines = full_width_content.split('\n')
             for line in lines:
                 writer.writerow([line])
         
-        return {"message": "File saved successfully", "file_path": file_path}
+        return {"message": "ファイルが正常に保存されました", "file_path": file_path}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/getjson")
+async def getjson():
+    """同じディレクトリにあるsample.csvをJSONファイルに変換して返す"""
+    try:
+        # CSVファイルパス
+        csv_file_path = os.path.join(os.path.dirname(__file__), "sample.csv")
+        
+        # ファイルが存在するか確認
+        if not os.path.exists(csv_file_path):
+            raise HTTPException(status_code=404, detail="sample.csvファイルが見つかりません")
+        
+        # CSVファイルを読み込み、JSONに変換
+        data = []
+        with open(csv_file_path, "r", encoding="utf-8") as csvfile:
+            # CSVダイアレクトを検出
+            sample = csvfile.read(1024)
+            csvfile.seek(0)
+            sniffer = csv.Sniffer()
+            delimiter = sniffer.sniff(sample).delimiter
+            
+            reader = csv.DictReader(csvfile, delimiter=delimiter)
+            for row in reader:
+                data.append(row)
+        
+        return {"data": data}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="sample.csvファイルが見つかりません")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

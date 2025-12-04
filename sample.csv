@@ -1,0 +1,37 @@
+﻿extracted_unit_id,extracted_unit_name,extracted_contents,extracted_contents_location,total_tokens,is_error
+extracted_unit_001,ファンド正式名称,グローバルX 半導体・トップ 10-日本株式 ETF,1ページ/(ファンド名),27311,False
+extracted_unit_002,委託会社,Global X Japan 株式会社,1ページ/(日付の下),27275,False
+extracted_unit_003,受託会社,三井住友信託銀行,1ページ/(受託会社),27257,False
+extracted_unit_004,銘柄コード,1148,3ページ/(銘柄コード),27176,False
+extracted_unit_005,設定日,2024 年11月19日(火)(上場予定日:2024年11月21日(木)),1ページ/(設定日),27238,False
+extracted_unit_006,償還日,無期限,1ページ/(信託期間),27211,False
+extracted_unit_007,1口あたりの購入価額,取得申込受付日の基準価額とします。,2ページ/(販売価額),27261,False
+extracted_unit_008,信託の上限金額,,,0,False
+extracted_unit_009,上限口数,,,0,False
+extracted_unit_010,募集方法,公募,1ページ/(公募・私募の別),27295,False
+extracted_unit_011,株投・公社投,証券投資信託、公社債投資信託,1ページ/(株投・公社投の別),27518,False
+extracted_unit_012,単位型・追加型,追加型,1ページ/(単位型・追加型の別),28752,False
+extracted_unit_013,ETFフラグ,,,0,False
+extracted_unit_014,ETF区分,,,0,False
+extracted_unit_015,FoFフラグ,,,0,False
+extracted_unit_016,FoFタイプ,,,0,False
+extracted_unit_017,追加信託情報,,,0,False
+extracted_unit_018,みなし配当利用,記載なし,記載なし,27905,False
+extracted_unit_019,株式への投資制限,株式 制限なし 為替予約 －,1ページ/(投資制限),27339,False
+extracted_unit_020,投資信託への投資制限,株式制限なし 為替予約 － 外貨建資産 不可 派生商品 ヘッジ目的に限定せず利用可,1ページ/(投資制限),27350,False
+extracted_unit_021,外貨建資産への投資制限,"株式：制限なし
+外貨建資産：0%
+為替予約：-
+派生商品：ヘッジ目的に限定せず利用可能",1ページ/(投資制限),28580,False
+extracted_unit_022,マザーファンドリスト,記載なし,記載なし,27603,False
+extracted_unit_023,分配方法,毎期,1ページ/(収益分配時期),27435,False
+extracted_unit_024,決算,5月、11月の各10日 第1計算期間は、当初設定日~2025年5月10日,1ページ/(収益分配),27280,False
+extracted_unit_025,仮決算,,,0,False
+extracted_unit_026,信託報酬,運用管理費用 (信託報酬) 純資産総額に対して年率0.11%(税抜0.10%)以内 内訳:委託会社0.0825%(税抜0.075%)以内、受託会社0.0275%(税抜0.025%)以内 有価証券貸借取引をした場合、その利益に対して 55.0% (税抜50.0%)以内,1ページ/(運用管理費用(信託報酬)),27650,False
+extracted_unit_027,監査報酬,信託財産中から支弁します。,2ページ/(監査報酬),28754,False
+extracted_unit_028,クローズド期間,－,1ページ/(受付中止日),27208,False
+extracted_unit_029,内部留保,,,0,False
+extracted_unit_030,解約内部留保,－,2ページ/(信託財産留保額),27249,False
+extracted_unit_031,一部解約金支払基準日,交換価額は交換請求受付日の基準価額とします。,2ページ/(解約),27312,False
+extracted_unit_032,一部解約支払日,顧客受渡日 交換請求受付日以降の委託者が定める期日,2ページ/(時間制限),27455,False
+extracted_unit_033,販売会社,大和証券、エービーエヌ・アムロ・クリアリング証券、バークレイズ証券,1ページ/(販売会社),27223,False
